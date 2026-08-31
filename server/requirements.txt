@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+requests
+pydantic
+
+# Optional ASR backend:
+faster-whisper
+
+# Optional Moondream backend:
+pillow
+moondream

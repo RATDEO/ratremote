@@ -1,0 +1,26 @@
+# macOS metadata
+.DS_Store
+
+# Swift Package Manager and app bundles
+.build/
+build/
+
+# Python environments and bytecode
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.mobileprovision
+
+# IDE-local state
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+*.xcuserstate
+xcuserdata/

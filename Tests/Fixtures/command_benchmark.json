@@ -1,0 +1,8 @@
+[
+  {"input":"press command shift p","expected":[{"type":"key_press","key":"p","modifiers":["command","shift"]}]},
+  {"input":"open YouTube","expected":[{"type":"open_url","url":"https://www.youtube.com"}]},
+  {"input":"scroll down a little","expected":[{"type":"scroll","x":0,"y":-20}]},
+  {"input":"paste hello from RatRemote","expected":[{"type":"paste_text","text":"hello from RatRemote"}]},
+  {"input":"close this window","expected":[{"type":"close_window"}]},
+  {"input":"what is the weather today?","expected":[]}
+]
