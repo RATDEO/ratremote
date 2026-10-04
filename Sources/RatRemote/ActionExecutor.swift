@@ -879,11 +879,10 @@ private var clipboardBackup: ClipboardBackup?
 
     func dragCurrentMouseBy(dx: Double, dy: Double) {
         guard let event = CGEvent(source: nil) else { return }
-        let bounds = CGDisplayBounds(CGMainDisplayID())
         let current = event.location
-        let point = CGPoint(
-            x: min(bounds.maxX - 1, max(bounds.minX, current.x + dx)),
-            y: min(bounds.maxY - 1, max(bounds.minY, current.y - dy))
+        let point = DesktopPointerBounds.constrain(
+            CGPoint(x: current.x + dx, y: current.y - dy),
+            to: connectedDisplayBounds()
         )
         CGWarpMouseCursorPosition(point)
         let source = eventSource(targetPID: nil)
@@ -902,7 +901,6 @@ private var clipboardBackup: ClipboardBackup?
 
     private func moveBy(dx: Double, dy: Double, targetPID: pid_t?, targetWindow: WindowCaptureTarget?) {
         guard let event = CGEvent(source: nil) else { return }
-        let bounds = CGDisplayBounds(CGMainDisplayID())
         if let targetPID {
             let point = virtualCursor.moveBy(dx: dx, dy: dy, fallbackWindow: targetWindow)
             let source = eventSource(targetPID: targetPID)
@@ -912,15 +910,24 @@ private var clipboardBackup: ClipboardBackup?
         }
 
         let current = event.location
-        let point = CGPoint(
-            x: min(bounds.maxX - 1, max(bounds.minX, current.x + dx)),
-            y: min(bounds.maxY - 1, max(bounds.minY, current.y - dy))
+        let point = DesktopPointerBounds.constrain(
+            CGPoint(x: current.x + dx, y: current.y - dy),
+            to: connectedDisplayBounds()
         )
         CGWarpMouseCursorPosition(point)
         // Post a synthetic mouse move event to unhide cursor when macOS has hidden it
         let source = CGEventSource(stateID: .combinedSessionState)
         let moveEvent = CGEvent(mouseEventSource: source, mouseType: .mouseMoved, mouseCursorPosition: point, mouseButton: .left)
         postMouseEvent(moveEvent, targetPID: nil)
+    }
+
+    private func connectedDisplayBounds() -> [CGRect] {
+        NSScreen.screens.compactMap { screen in
+            guard let number = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber else {
+                return nil
+            }
+            return CGDisplayBounds(CGDirectDisplayID(number.uint32Value))
+        }
     }
 
     private func postCurrentMouseButton(type: CGEventType, pressure: Double) {
